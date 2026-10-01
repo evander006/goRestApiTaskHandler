@@ -6,6 +6,9 @@ import (
 	"os"
 	"restApiGo/internal/database"
 	"restApiGo/internal/handlers"
+	"restApiGo/internal/routes"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
@@ -19,11 +22,13 @@ func main() {
 	}
 	log.Printf("Starting server on port %s", serverPort)
 	db, err := database.Connect(databaseUrl)
+	createFiber(serverPort)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 	log.Printf("Database connection established")
+
 	taskStore := database.NewTaskStore(db)
 	handler := handlers.NewHandler(taskStore)
 	mux := http.NewServeMux()
@@ -66,4 +71,10 @@ func taskIdHandler(handler *handlers.Handler) http.HandlerFunc {
 			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		}
 	}
+}
+func createFiber(port string) {
+	app := fiber.New()
+	routes.Setup(app)
+	app.Listen(":" + port)
+
 }
