@@ -27,7 +27,7 @@ func (s *TaskStore) GetAll() ([]models.Task, error) {
 }
 func (s *TaskStore) GetById(id int) (*models.Task, error) {
 	var task models.Task
-	query := "SELECT * FROM tasks WHERE id = $id ORDER BY created_at DESC"
+	query := "SELECT * FROM tasks WHERE id = $1"
 	err := s.db.Get(&task, query, id)
 	if err == sql.ErrNoRows {
 		return nil, fmt.Errorf("task with id %d not found", id)
